@@ -19,8 +19,9 @@ export default defineConfig({
         description: "Just a one color page.",
         theme_color: "#ffffff",
         orientation: "landscape",
+        display: "fullscreen",
         scope: "/",
-        start_url: "/",
+        start_url: "/?fullscreen=true",
         icons: [
           {
             src: "pwa-192x192.png",
