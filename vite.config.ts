@@ -10,12 +10,12 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       devOptions: {
-        enabled: true
+        enabled: true,
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
         name: "One Page Color",
-        short_name: "OPC",
+        short_name: "One Page Color",
         description: "Just a one color page.",
         theme_color: "#ffffff",
         orientation: "landscape",
