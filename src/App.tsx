@@ -1,4 +1,7 @@
-import { ChangeEvent, MouseEvent, useState } from "react"
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react"
+import { MonitorStop } from "lucide-react"
+import useStayAwake from "use-stay-awake"
+
 import {
   Card,
   CardContent,
@@ -10,9 +13,13 @@ type MouseMoveType = MouseEvent<HTMLDivElement> & { target: Element }
 function App() {
   const [color, setColor] = useState("#FFFFFF")
   const [mouseActive, setMouseActive] = useState(false)
+  const [stayScreenAwake, setStayScreenAwake] = useState(false)
+
+  const device = useStayAwake()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value)
+    setStayScreenAwake(true)
   }
 
   let removeMouseTimeout: ReturnType<typeof setTimeout>
@@ -31,6 +38,19 @@ function App() {
       }, THREE_SECONDS)
     })()
   }
+
+  function handleDisableScreenAwake() {
+    if (!stayScreenAwake) return alert("Escolha a cor novamente para ativar")
+    setStayScreenAwake(false)
+  }
+
+  useEffect(() => {
+    if (stayScreenAwake === true) {
+      device.preventSleeping()
+    } else {
+      device.allowSleeping()
+    }
+  }, [device, stayScreenAwake])
 
   return (
     <div
@@ -56,6 +76,31 @@ function App() {
           />
         </CardContent>
       </Card>
+
+      <div
+        className={
+          "absolute top-8 right-4 p-4 flex gap-4 invisible opacity-0" +
+          (
+            mouseActive
+            ? " group-hover:opacity-100 group-hover:visible"
+            : " !visible !opacity-100"
+          )
+        }
+      >
+        <div className="flex flex-col items-center gap-1 p-4 bg-zinc-600 rounded-lg">
+          <button
+            type="button"
+            className="cursor-pointer"
+            onClick={handleDisableScreenAwake}
+          >
+            <MonitorStop size={28} className="text-white" />
+          </button>
+
+          <p className="text-white text-sm font-medium">
+            {stayScreenAwake ? "Ativado" : "Desativado"}
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
