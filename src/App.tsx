@@ -4,8 +4,8 @@ import useStayAwake from "use-stay-awake"
 
 import {
   Card,
-  CardContent,
   CardTitle,
+  CardContent,
 } from "@/components/ui/card"
 
 type MouseMoveType = MouseEvent<HTMLDivElement> & { target: Element }
@@ -64,10 +64,10 @@ function App() {
         One Color Page
       </h1>
 
-      <Card className={"absolute right-8 bottom-8 p-8 space-y-4 dark opacity-0 invisible transition-all" + (mouseActive ? " group-hover:opacity-100 group-hover:visible" : " !visible !opacity-100")}>
-        <CardTitle>Escolha uma cor</CardTitle>
+      <Card className={"absolute right-8 bottom-8 p-8 gap-4 opacity-0 invisible transition-all bg-blue-950" + (mouseActive ? " group-hover:opacity-100 group-hover:visible" : " !visible !opacity-100")}>
+        <CardTitle className="text-white">Escolha uma cor</CardTitle>
         <CardContent className="p-0">
-          <input 
+          <input
             type="color"
             id="background"
             onChange={handleChange}
@@ -87,14 +87,8 @@ function App() {
           )
         }
       >
-        <div className="flex flex-col items-center gap-1 p-4 bg-zinc-600 rounded-lg">
-          <button
-            type="button"
-            className="cursor-pointer"
-            onClick={handleDisableScreenAwake}
-          >
-            <MonitorStop size={28} className="text-white" />
-          </button>
+        <div className="flex flex-col items-center gap-1 p-4 bg-zinc-600 rounded-lg cursor-pointer" onClick={handleDisableScreenAwake}>
+          <MonitorStop size={28} className="text-white" />
 
           <p className="text-white text-sm font-medium">
             {stayScreenAwake ? "Ativado" : "Desativado"}
