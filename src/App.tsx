@@ -1,4 +1,5 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router"
 import { MonitorStop } from "lucide-react"
 import useStayAwake from "use-stay-awake"
 
@@ -10,16 +11,24 @@ import {
 
 type MouseMoveType = MouseEvent<HTMLDivElement> & { target: Element }
 
-function App() {
-  const [color, setColor] = useState("#FFFFFF")
+interface AppProps {
+  screenAwake?: boolean
+}
+
+function App({ screenAwake = false }: AppProps) {
+  const { color: colorParam } = useParams()
+  const navigate = useNavigate()
+
+  const [color, setColor] = useState(colorParam ? '#' + colorParam : "#FFFFFF")
   const [mouseActive, setMouseActive] = useState(false)
-  const [stayScreenAwake, setStayScreenAwake] = useState(false)
+  const [stayScreenAwake, setStayScreenAwake] = useState(screenAwake)
 
   const device = useStayAwake()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value)
     setStayScreenAwake(true)
+    navigate(`/${color.substring(1)}`)
   }
 
   let removeMouseTimeout: ReturnType<typeof setTimeout>
@@ -39,9 +48,8 @@ function App() {
     })()
   }
 
-  function handleDisableScreenAwake() {
-    if (!stayScreenAwake) return alert("Escolha a cor novamente para ativar")
-    setStayScreenAwake(false)
+  function handleSwitchScreenAwake() {
+    setStayScreenAwake(!stayScreenAwake)
   }
 
   useEffect(() => {
@@ -87,7 +95,7 @@ function App() {
           )
         }
       >
-        <div className="flex flex-col items-center gap-1 p-4 bg-zinc-600 rounded-lg cursor-pointer" onClick={handleDisableScreenAwake}>
+        <div className="flex flex-col items-center gap-1 p-4 bg-zinc-600 rounded-lg cursor-pointer" onClick={handleSwitchScreenAwake}>
           <MonitorStop size={28} className="text-white" />
 
           <p className="text-white text-sm font-medium">
