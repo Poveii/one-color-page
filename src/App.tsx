@@ -28,7 +28,7 @@ function App({ screenAwake = false }: AppProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value)
     setStayScreenAwake(true)
-    navigate(`/${color.substring(1)}`)
+    navigate(`/${e.target.value.substring(1)}`)
   }
 
   let removeMouseTimeout: ReturnType<typeof setTimeout>
