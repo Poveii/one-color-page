@@ -20,6 +20,7 @@ function App({ screenAwake = false }: AppProps) {
   const navigate = useNavigate()
 
   const [color, setColor] = useState(colorParam ? '#' + colorParam : "#FFFFFF")
+  const [textColor, setTextColor] = useState(color)
   const [mouseActive, setMouseActive] = useState(false)
   const [stayScreenAwake, setStayScreenAwake] = useState(screenAwake)
 
@@ -52,6 +53,30 @@ function App({ screenAwake = false }: AppProps) {
     setStayScreenAwake(!stayScreenAwake)
   }
 
+  function getConstrastColor(hexColor: string) {
+    hexColor = hexColor.replace("#", "")
+
+    const rgb = { r: 0, g: 0, b: 0 }
+    if (hexColor.length === 3) {
+      rgb.r = parseInt(hexColor.substring(0, 1) + hexColor.substring(0, 1), 16)
+      rgb.g = parseInt(hexColor.substring(1, 2) + hexColor.substring(1, 2), 16)
+      rgb.b = parseInt(hexColor.substring(2, 3) + hexColor.substring(2, 3), 16)
+    } else if (hexColor.length === 2) {
+      rgb.r = parseInt(hexColor.substring(0, 2), 16)
+      rgb.g = rgb.r
+      rgb.b = rgb.r
+    } else {
+      rgb.r = parseInt(hexColor.substring(0, 2), 16)
+      rgb.g = parseInt(hexColor.substring(2, 4), 16)
+      rgb.b = parseInt(hexColor.substring(4, 6), 16)
+    }
+
+    const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255
+    console.log(rgb, luminance)
+
+    return luminance > 0.5 ? "#000000" : "#FFFFFF"
+  }
+
   useEffect(() => {
     if (stayScreenAwake === true) {
       device.preventSleeping()
@@ -59,6 +84,10 @@ function App({ screenAwake = false }: AppProps) {
       device.allowSleeping()
     }
   }, [device, stayScreenAwake])
+
+  useEffect(() => {
+    setTextColor(getConstrastColor(color))
+  }, [color])
 
   return (
     <div
@@ -68,6 +97,7 @@ function App({ screenAwake = false }: AppProps) {
     >
       <h1
         className={"font-bold text-2xl opacity-0 invisible transition-all" + (mouseActive ? " group-hover:opacity-100 group-hover:visible" : " !visible !opacity-100")}
+        style={{ color: textColor }}
       >
         One Color Page
       </h1>
@@ -90,8 +120,8 @@ function App({ screenAwake = false }: AppProps) {
           "absolute top-8 right-4 p-4 flex gap-4 invisible opacity-0" +
           (
             mouseActive
-            ? " group-hover:opacity-100 group-hover:visible"
-            : " !visible !opacity-100"
+              ? " group-hover:opacity-100 group-hover:visible"
+              : " !visible !opacity-100"
           )
         }
       >
