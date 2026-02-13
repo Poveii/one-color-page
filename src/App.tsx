@@ -96,13 +96,29 @@ function App({ screenAwake = false }: AppProps) {
       onMouseMove={handleMouseMovement}
     >
       <h1
-        className={"font-bold text-2xl opacity-0 invisible transition-all" + (mouseActive ? " group-hover:opacity-100 group-hover:visible" : " !visible !opacity-100")}
+        className={
+          "font-bold text-2xl opacity-0 invisible transition-all" +
+          (
+            mouseActive
+              ? " group-hover:opacity-100 group-hover:visible"
+              : " !visible !opacity-100"
+          )
+        }
         style={{ color: textColor }}
       >
         One Color Page
       </h1>
 
-      <Card className={"absolute right-8 bottom-8 p-8 gap-4 opacity-0 invisible transition-all bg-blue-950" + (mouseActive ? " group-hover:opacity-100 group-hover:visible" : " !visible !opacity-100")}>
+      <Card
+        className={
+          "absolute right-8 bottom-8 p-8 gap-4 opacity-0 invisible transition-all bg-blue-950" +
+          (
+            mouseActive
+              ? " group-hover:opacity-100 group-hover:visible"
+              : " !visible !opacity-100"
+          )
+        }
+      >
         <CardTitle className="text-white">Escolha uma cor</CardTitle>
         <CardContent className="p-0">
           <input
@@ -125,7 +141,10 @@ function App({ screenAwake = false }: AppProps) {
           )
         }
       >
-        <div className="flex flex-col items-center gap-1 p-4 bg-zinc-600 rounded-lg cursor-pointer" onClick={handleSwitchScreenAwake}>
+        <div
+          className="flex flex-col items-center gap-1 p-4 bg-zinc-600 rounded-lg cursor-pointer"
+          onClick={handleSwitchScreenAwake}
+        >
           <MonitorStop size={28} className="text-white" />
 
           <p className="text-white text-sm font-medium">
