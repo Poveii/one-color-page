@@ -23,6 +23,7 @@ function App({ screenAwake = false }: AppProps) {
   const [textColor, setTextColor] = useState(color)
   const [mouseActive, setMouseActive] = useState(false)
   const [stayScreenAwake, setStayScreenAwake] = useState(screenAwake)
+  const [makeInfoStay, setMakeInfoStay] = useState(false)
 
   const device = useStayAwake()
 
@@ -30,10 +31,12 @@ function App({ screenAwake = false }: AppProps) {
     setColor(e.target.value)
     setStayScreenAwake(true)
     navigate(`/${e.target.value.substring(1)}`)
+    setMakeInfoStay(false)
   }
 
   let removeMouseTimeout: ReturnType<typeof setTimeout>
   function handleMouseMovement(event: MouseMoveType) {
+    if (makeInfoStay === true) return
     setMouseActive(true)
 
     event.target.classList.remove("cursor-none")
@@ -72,7 +75,6 @@ function App({ screenAwake = false }: AppProps) {
     }
 
     const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255
-    console.log(rgb, luminance)
 
     return luminance > 0.5 ? "#000000" : "#FFFFFF"
   }
@@ -99,7 +101,7 @@ function App({ screenAwake = false }: AppProps) {
         className={
           "font-bold text-2xl opacity-0 invisible transition-all" +
           (
-            mouseActive
+            mouseActive && !makeInfoStay
               ? " group-hover:opacity-100 group-hover:visible"
               : " !visible !opacity-100"
           )
@@ -113,7 +115,7 @@ function App({ screenAwake = false }: AppProps) {
         className={
           "absolute right-8 bottom-8 p-8 gap-4 opacity-0 invisible transition-all bg-blue-950" +
           (
-            mouseActive
+            mouseActive && !makeInfoStay
               ? " group-hover:opacity-100 group-hover:visible"
               : " !visible !opacity-100"
           )
@@ -124,6 +126,7 @@ function App({ screenAwake = false }: AppProps) {
           <input
             type="color"
             id="background"
+            onClick={() => setMakeInfoStay(true)}
             onChange={handleChange}
             value={color}
             className="appearance-none w-full h-16 bg-transparent border-none cursor-pointer rounded-lg"
@@ -135,7 +138,7 @@ function App({ screenAwake = false }: AppProps) {
         className={
           "absolute top-8 right-4 p-4 flex gap-4 invisible opacity-0" +
           (
-            mouseActive
+            mouseActive && !makeInfoStay
               ? " group-hover:opacity-100 group-hover:visible"
               : " !visible !opacity-100"
           )
