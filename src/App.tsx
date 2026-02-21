@@ -36,7 +36,8 @@ function App({ screenAwake = false }: AppProps) {
 
   let removeMouseTimeout: ReturnType<typeof setTimeout>
   function handleMouseMovement(event: MouseMoveType) {
-    if (makeInfoStay === true) return
+    if (makeInfoStay) return
+
     setMouseActive(true)
 
     event.target.classList.remove("cursor-none")
@@ -45,6 +46,7 @@ function App({ screenAwake = false }: AppProps) {
     const THREE_SECONDS = 3000;
     (function () {
       clearTimeout(removeMouseTimeout)
+      if (makeInfoStay) return
       removeMouseTimeout = setTimeout(() => {
         event.target.classList.remove("group")
         event.target.classList.add("cursor-none")
@@ -54,6 +56,20 @@ function App({ screenAwake = false }: AppProps) {
 
   function handleSwitchScreenAwake() {
     setStayScreenAwake(!stayScreenAwake)
+  }
+
+  function handleShowInfoClick(event: MouseMoveType) {
+    clearTimeout(removeMouseTimeout)
+    setMouseActive(false)
+
+    const newMakeInfoStay = !makeInfoStay
+    setMakeInfoStay(newMakeInfoStay)
+    if (newMakeInfoStay) {
+      event.target.classList.add("group")
+      event.target.classList.remove("cursor-none")
+    } else {
+      handleMouseMovement(event)
+    }
   }
 
   function getConstrastColor(hexColor: string) {
@@ -96,6 +112,7 @@ function App({ screenAwake = false }: AppProps) {
       className="h-screen grid place-content-center relative"
       style={{ backgroundColor: color }}
       onMouseMove={handleMouseMovement}
+      onClick={handleShowInfoClick}
     >
       <h1
         className={
