@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useState } from "react"
+import { ChangeEvent, MouseEvent, TouchEvent, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { MonitorStop } from "lucide-react"
 import useStayAwake from "use-stay-awake"
@@ -25,6 +25,8 @@ function App({ screenAwake = false }: AppProps) {
   const [stayScreenAwake, setStayScreenAwake] = useState(screenAwake)
   const [makeInfoStay, setMakeInfoStay] = useState(false)
 
+  const [isMobile, setIsMobile] = useState(false);
+
   const device = useStayAwake()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +48,6 @@ function App({ screenAwake = false }: AppProps) {
     const THREE_SECONDS = 3000;
     (function () {
       clearTimeout(removeMouseTimeout)
-      if (makeInfoStay) return
       removeMouseTimeout = setTimeout(() => {
         event.target.classList.remove("group")
         event.target.classList.add("cursor-none")
@@ -54,13 +55,28 @@ function App({ screenAwake = false }: AppProps) {
     })()
   }
 
+  function handleTouch(event: TouchEvent<HTMLDivElement>) {
+    if (!isMobile) return
+    setMouseActive(!mouseActive)
+    setMakeInfoStay(!makeInfoStay)
+
+    if (makeInfoStay) {
+      event.currentTarget.classList.add("group")
+      event.currentTarget.classList.remove("cursor-none")
+    } else {
+      event.currentTarget.classList.remove("group")
+      event.currentTarget.classList.add("cursor-none")
+    }
+  }
+
   function handleSwitchScreenAwake() {
     setStayScreenAwake(!stayScreenAwake)
   }
 
   function handleShowInfoClick(event: MouseMoveType) {
+    if (isMobile) return
     clearTimeout(removeMouseTimeout)
-    setMouseActive(false)
+    setMouseActive(true)
 
     const newMakeInfoStay = !makeInfoStay
     setMakeInfoStay(newMakeInfoStay)
@@ -68,7 +84,8 @@ function App({ screenAwake = false }: AppProps) {
       event.target.classList.add("group")
       event.target.classList.remove("cursor-none")
     } else {
-      handleMouseMovement(event)
+      event.target.classList.remove("group")
+      event.target.classList.add("cursor-none")
     }
   }
 
@@ -96,6 +113,15 @@ function App({ screenAwake = false }: AppProps) {
   }
 
   useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+
+    if (mobileRegex.test(userAgent)) {
+      setIsMobile(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (stayScreenAwake === true) {
       device.preventSleeping()
     } else {
@@ -112,11 +138,12 @@ function App({ screenAwake = false }: AppProps) {
       className="h-screen grid place-content-center relative"
       style={{ backgroundColor: color }}
       onMouseMove={handleMouseMovement}
+      onTouchEnd={handleTouch}
       onClick={handleShowInfoClick}
     >
       <h1
         className={
-          "font-bold text-2xl opacity-0 invisible transition-all" +
+          "font-bold text-2xl opacity-0 invisible transition-all select-none" +
           (
             mouseActive && !makeInfoStay
               ? " group-hover:opacity-100 group-hover:visible"
@@ -138,7 +165,7 @@ function App({ screenAwake = false }: AppProps) {
           )
         }
       >
-        <CardTitle className="text-white">Escolha uma cor</CardTitle>
+        <CardTitle className="text-white select-none">Escolha uma cor</CardTitle>
         <CardContent className="p-0">
           <input
             type="color"
@@ -167,7 +194,7 @@ function App({ screenAwake = false }: AppProps) {
         >
           <MonitorStop size={28} className="text-white" />
 
-          <p className="text-white text-sm font-medium">
+          <p className="text-white text-sm font-medium select-none">
             {stayScreenAwake ? "Ativado" : "Desativado"}
           </p>
         </div>
