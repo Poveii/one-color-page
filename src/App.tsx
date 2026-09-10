@@ -1,13 +1,13 @@
 import { ChangeEvent, MouseEvent, TouchEvent, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { MonitorStop } from "lucide-react"
-import useStayAwake from "use-stay-awake"
 
 import {
   Card,
   CardTitle,
   CardContent,
 } from "@/components/ui/card"
+import { useWakeLock } from "./utils/useWakeLock"
 
 type MouseMoveType = MouseEvent<HTMLDivElement> & { target: Element }
 
@@ -27,7 +27,7 @@ function App({ screenAwake = false }: AppProps) {
 
   const [isMobile, setIsMobile] = useState(false);
 
-  const device = useStayAwake()
+  const [lock, unlock] = useWakeLock();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value)
@@ -123,11 +123,11 @@ function App({ screenAwake = false }: AppProps) {
 
   useEffect(() => {
     if (stayScreenAwake === true) {
-      device.preventSleeping()
+      lock()
     } else {
-      device.allowSleeping()
+      unlock()
     }
-  }, [device, stayScreenAwake])
+  }, [stayScreenAwake])
 
   useEffect(() => {
     setTextColor(getConstrastColor(color))
