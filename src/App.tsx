@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, TouchEvent, useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { MonitorStop } from "lucide-react"
 
@@ -8,8 +8,7 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import { useWakeLock } from "./utils/useWakeLock"
-
-type MouseMoveType = MouseEvent<HTMLDivElement> & { target: Element }
+import { useBodyMouseMove } from "./utils/useBodyMouseMove"
 
 interface AppProps {
   screenAwake?: boolean
@@ -21,51 +20,36 @@ function App({ screenAwake = false }: AppProps) {
 
   const [color, setColor] = useState(colorParam ? '#' + colorParam : "#FFFFFF")
   const [textColor, setTextColor] = useState(color)
-  const [mouseActive, setMouseActive] = useState(false)
   const [stayScreenAwake, setStayScreenAwake] = useState(screenAwake)
   const [makeInfoStay, setMakeInfoStay] = useState(false)
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false)
+
+  const parentRef = useRef<HTMLDivElement>(null)
 
   const [lock, unlock] = useWakeLock();
+  const mouseActive = useBodyMouseMove(parentRef)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value)
     setStayScreenAwake(true)
     navigate(`/${e.target.value.substring(1)}`)
-    setMakeInfoStay(false)
   }
 
-  let removeMouseTimeout: ReturnType<typeof setTimeout>
-  function handleMouseMovement(event: MouseMoveType) {
-    if (makeInfoStay) return
-
-    setMouseActive(true)
-
-    event.target.classList.remove("cursor-none")
-    event.target.classList.add("group")
-
-    const THREE_SECONDS = 3000;
-    (function () {
-      clearTimeout(removeMouseTimeout)
-      removeMouseTimeout = setTimeout(() => {
-        event.target.classList.remove("group")
-        event.target.classList.add("cursor-none")
-      }, THREE_SECONDS)
-    })()
-  }
-
-  function handleTouch(event: TouchEvent<HTMLDivElement>) {
+  function handleTouch() {
     if (!isMobile) return
-    setMouseActive(!mouseActive)
+
+    const parent = parentRef.current
+    if (!parent) return
+
     setMakeInfoStay(!makeInfoStay)
 
     if (makeInfoStay) {
-      event.currentTarget.classList.add("group")
-      event.currentTarget.classList.remove("cursor-none")
+      parent.classList.add("group")
+      parent.classList.remove("cursor-none")
     } else {
-      event.currentTarget.classList.remove("group")
-      event.currentTarget.classList.add("cursor-none")
+      parent.classList.remove("group")
+      parent.classList.add("cursor-none")
     }
   }
 
@@ -73,19 +57,20 @@ function App({ screenAwake = false }: AppProps) {
     setStayScreenAwake(!stayScreenAwake)
   }
 
-  function handleShowInfoClick(event: MouseMoveType) {
+  function handleShowInfoClick() {
     if (isMobile) return
-    clearTimeout(removeMouseTimeout)
-    setMouseActive(true)
+
+    const parent = parentRef.current
+    if (!parent) return
 
     const newMakeInfoStay = !makeInfoStay
     setMakeInfoStay(newMakeInfoStay)
     if (newMakeInfoStay) {
-      event.target.classList.add("group")
-      event.target.classList.remove("cursor-none")
+      parent.classList.add("group")
+      parent.classList.remove("cursor-none")
     } else {
-      event.target.classList.remove("group")
-      event.target.classList.add("cursor-none")
+      parent.classList.remove("group")
+      parent.classList.add("cursor-none")
     }
   }
 
@@ -136,14 +121,14 @@ function App({ screenAwake = false }: AppProps) {
 
   return (
     <div
-      className="h-screen grid place-content-center relative"
-      onMouseMove={handleMouseMovement}
-      onTouchEnd={handleTouch}
-      onClick={handleShowInfoClick}
+      ref={parentRef}
+      className="w-screen h-screen grid place-content-center relative group"
     >
+      <div className="w-full h-screen absolute inset-0 -z-0" onTouchEnd={handleTouch} onClick={handleShowInfoClick} />
+
       <h1
         className={
-          "font-bold text-2xl opacity-0 invisible transition-all select-none" +
+          "z-10 font-bold text-2xl opacity-0 invisible transition-all select-none" +
           (
             mouseActive && !makeInfoStay
               ? " group-hover:opacity-100 group-hover:visible"
