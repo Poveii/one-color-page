@@ -130,13 +130,13 @@ function App({ screenAwake = false }: AppProps) {
   }, [stayScreenAwake])
 
   useEffect(() => {
+    document.body.style.backgroundColor = color
     setTextColor(getConstrastColor(color))
   }, [color])
 
   return (
     <div
       className="h-screen grid place-content-center relative"
-      style={{ backgroundColor: color }}
       onMouseMove={handleMouseMovement}
       onTouchEnd={handleTouch}
       onClick={handleShowInfoClick}
