@@ -7,6 +7,7 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card"
+
 import { useWakeLock } from "./utils/useWakeLock"
 import { useBodyMouseMove } from "./utils/useBodyMouseMove"
 
@@ -27,7 +28,7 @@ function App({ screenAwake = false }: AppProps) {
 
   const parentRef = useRef<HTMLDivElement>(null)
 
-  const [lock, unlock] = useWakeLock();
+  const [lock, unlock] = useWakeLock()
   const mouseActive = useBodyMouseMove(parentRef)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -98,13 +99,13 @@ function App({ screenAwake = false }: AppProps) {
   }
 
   useEffect(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+    const userAgent = navigator.userAgent.toLowerCase()
+    const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i
 
     if (mobileRegex.test(userAgent)) {
-      setIsMobile(true);
+      setIsMobile(true)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (stayScreenAwake === true) {
@@ -124,7 +125,11 @@ function App({ screenAwake = false }: AppProps) {
       ref={parentRef}
       className="w-screen h-screen grid place-content-center relative group"
     >
-      <div className="w-full h-screen absolute inset-0 -z-0" onTouchEnd={handleTouch} onClick={handleShowInfoClick} />
+      <div
+        className="w-full h-screen absolute inset-0 -z-0"
+        onTouchEnd={handleTouch}
+        onClick={handleShowInfoClick}
+      />
 
       <h1
         className={
@@ -150,7 +155,9 @@ function App({ screenAwake = false }: AppProps) {
           )
         }
       >
-        <CardTitle className="text-white select-none">Escolha uma cor</CardTitle>
+        <CardTitle className="text-white select-none">
+          Escolha uma cor
+        </CardTitle>
         <CardContent className="p-0">
           <input
             type="color"
