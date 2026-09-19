@@ -156,7 +156,7 @@ function App({ screenAwake = false }: AppProps) {
         }
       >
         <CardTitle className="text-white select-none">
-          Escolha uma cor
+          Pick a color
         </CardTitle>
         <CardContent className="p-0">
           <input
@@ -187,7 +187,7 @@ function App({ screenAwake = false }: AppProps) {
           <MonitorStop size={28} className="text-white" />
 
           <p className="text-white text-sm font-medium select-none">
-            {stayScreenAwake ? "Ativado" : "Desativado"}
+            {stayScreenAwake ? "Activated" : "Deactivated"}
           </p>
         </div>
       </div>
