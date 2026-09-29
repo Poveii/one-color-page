@@ -11,6 +11,14 @@ import {
 import { useWakeLock } from "./utils/useWakeLock"
 import { useBodyMouseMove } from "./utils/useBodyMouseMove"
 
+function initStayScreenAwake(screenAwake: boolean) {
+  const savedValue = localStorage.getItem("stay-screen-awake")
+
+  return savedValue == null
+    ? screenAwake
+    : savedValue === "true"
+}
+
 interface AppProps {
   screenAwake?: boolean
 }
@@ -21,14 +29,16 @@ function App({ screenAwake = false }: AppProps) {
 
   const [color, setColor] = useState(colorParam ? '#' + colorParam : "#FFFFFF")
   const [textColor, setTextColor] = useState(color)
-  const [stayScreenAwake, setStayScreenAwake] = useState(screenAwake)
+  const [stayScreenAwake, setStayScreenAwake] = useState(() => {
+    return initStayScreenAwake(screenAwake)
+  })
   const [makeInfoStay, setMakeInfoStay] = useState(false)
 
   const [isMobile, setIsMobile] = useState(false)
 
   const parentRef = useRef<HTMLDivElement>(null)
 
-  const [lock, unlock] = useWakeLock()
+  const { lockScreen, unlockScreen } = useWakeLock()
   const mouseActive = useBodyMouseMove(parentRef)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -108,10 +118,12 @@ function App({ screenAwake = false }: AppProps) {
   }, [])
 
   useEffect(() => {
+    localStorage.setItem("stay-screen-awake", String(stayScreenAwake))
+
     if (stayScreenAwake === true) {
-      lock()
+      lockScreen()
     } else {
-      unlock()
+      unlockScreen()
     }
   }, [stayScreenAwake])
 
