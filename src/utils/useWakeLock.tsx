@@ -8,8 +8,11 @@ export function useWakeLock() {
   }
 
   const wakeLockRef = useRef<WakeLockSentinel | null>(null)
+  const shouldStayAwake = useRef(false)
 
   const lockScreen = useCallback(async () => {
+    shouldStayAwake.current = true
+
     if (
       !supported ||
       document.visibilityState !== "visible" ||
@@ -33,6 +36,8 @@ export function useWakeLock() {
   }, [])
 
   const unlockScreen = useCallback(async () => {
+    shouldStayAwake.current = false
+
     const wakeLock = wakeLockRef.current
     wakeLockRef.current = null
 
@@ -41,7 +46,10 @@ export function useWakeLock() {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
+      if (
+        document.visibilityState === "visible" &&
+        shouldStayAwake.current
+      ) {
         void lockScreen()
       }
     }
